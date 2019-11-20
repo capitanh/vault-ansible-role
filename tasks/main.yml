@@ -1,0 +1,67 @@
+---
+- name: Install required packages
+  apt:
+    name: unzip
+    state: present
+
+- name: create consul service user
+  user:
+    name: "{{consul_user}}"
+    state: present
+    system: yes
+
+- name: Create dir for consult data
+  file:
+    path: "{{consul_data_dir}}"
+    state: directory
+    owner: "{{consul_user}}"
+    group: "{{consul_user}}"
+    mode: 0700
+
+- name: Download and extract package
+  unarchive:
+    src: "{{item}}"
+    dest: "{{install_dir}}"
+    remote_src: yes
+  with_items:
+    - "https://releases.hashicorp.com/vault/{{vault_version}}/vault_{{vault_version}}_linux_amd64.zip"
+    - "https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_linux_amd64.zip"
+
+- name: Copy vault config
+  copy:
+    src: vault.hcl
+    dest: /etc
+    owner: root
+    group: root
+
+- name: Copy service script
+  copy:
+    src: "{{item}}"
+    dest: /lib/systemd/system
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - consul.service
+    - vault.service
+
+- name: Make systemd symbolic link
+  file:
+    src: "/lib/systemd/system/{{item}}"
+    dest: "/etc/systemd/system/multi-user.target.wants/{{item}}"
+    state: link
+    owner: root
+    group: root
+    mode: 0777
+  with_items:
+    - consul.service
+    - vault.service
+
+- name: Start service
+  service:
+    name: "{{item}}"
+    state: started
+  with_items:
+    - consul
+    - vault
+

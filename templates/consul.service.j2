@@ -1,0 +1,12 @@
+[Unit]
+Description=consul service
+After=network.target
+
+[Service]
+ExecStart={{install_dir}}/consul agent -server -bootstrap-expect 1 -data-dir {{consul_data_dir}} -bind 127.0.0.1
+ExecStop={{install_dir}}/consul leave
+User={{consul_user}}
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

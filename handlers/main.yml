@@ -1,0 +1,16 @@
+---
+# handlers file for vault
+- name: Stop vault service
+  service:
+    name: vault
+    state: stopped
+
+- name: Start vault service
+  service:
+    name: vault
+    state: started
+
+- name: Restart vault service
+  service:
+    name: vault
+    state: restarted
