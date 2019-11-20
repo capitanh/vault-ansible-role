@@ -35,7 +35,7 @@
     group: root
 
 - name: Copy service script
-  templete:
+  template:
     src: "{{item}}"
     dest: /lib/systemd/system
     owner: root
