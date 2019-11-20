@@ -28,14 +28,14 @@
     - "https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_linux_amd64.zip"
 
 - name: Copy vault config
-  copy:
-    src: vault.hcl
-    dest: /etc
+  template:
+    src: vault.hcl.j2
+    dest: /etc/vault.hcl
     owner: root
     group: root
 
 - name: Copy service script
-  copy:
+  templete:
     src: "{{item}}"
     dest: /lib/systemd/system
     owner: root
